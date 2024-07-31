@@ -32,19 +32,64 @@ let currentRow = 0;
 
 // Keydown handler
 document.addEventListener("keydown", (e) => {
+    console.log(e.key);
+
     // Check for enter -> check guess
+    if (e.key == "Enter" && currentCol === 4) {
+        checkGuess();
+        return;
+    }
+
     // Check for backspace -> decrease current column, or erase value in current col
+    if (e.key == "Backspace") {
+        if (currentCol > 0 && grid[currentRow][currentCol] === "") {
+            // Decrement to prev column if there is one, in current row
+            currentCol--;
+        }
+        grid[currentRow][currentCol] = "";
+        updateGridHtml();
+    }
 
     //Otherwise, write to current tile, and increment current column
-    grid[currentRow][currentCol] = e.key;
-    currentCol < 4 ? currentCol++ : (currentCol = currentCol);
-    updateGridHtml();
+    else if (currentCol <= 4) {
+        grid[currentRow][currentCol] = e.key;
+        currentCol < 4 ? currentCol++ : (currentCol = currentCol);
+        updateGridHtml();
+    }
 });
 
 function updateGridHtml() {
     for (let row = 0; row < 6; ++row) {
         for (let col = 0; col < 5; ++col) {
-            gridTilesHTML[row][col].innerText = grid[row][col];
+            gridTilesHTML[row][col].textContent = grid[row][col].toUpperCase();
         }
     }
+}
+
+const answers = ["crane", "thumb"];
+const answerIdx = 0;
+function checkGuess() {
+    let guess = grid[currentRow].join("");
+    let answer = answers[answerIdx];
+    console.log(guess) + "answer: " + answer;
+    if (guess === answer) {
+        gameOver(true);
+    } else {
+        gameOver(false);
+    }
+}
+
+function gameOver(hasWon) {
+    let container = document.getElementById("game-container");
+    let message = document.createElement("h1");
+
+    if (hasWon) {
+        message.classList.add("end-game-message");
+        message.textContent = "Victory!";
+    } else {
+        message.classList.add("end-game-message");
+        message.textContent = "You lose!";
+    }
+
+    container.appendChild(message);
 }
