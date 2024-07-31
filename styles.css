@@ -28,3 +28,17 @@
     font-size: 24px;
     font-weight: bold;
 }
+
+.finished-row {
+    border: 1px solid gray;
+}
+
+.partial-guess {
+    background-color: #ffff00;
+    color: black;
+}
+
+.correct-guess {
+    background-color: #00ff00;
+    color: black;
+}
