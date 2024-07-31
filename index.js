@@ -43,8 +43,6 @@ function startGame() {
 document.addEventListener("keydown", onkeydown);
 
 function onkeydown(e) {
-    console.log(e.key);
-
     // Check for enter -> check guess
     if (e.key == "Enter") {
         if (currentCol === 4 && grid[currentRow][currentCol] != "")
@@ -81,6 +79,14 @@ function updateGridHtml() {
 function checkGuess() {
     let guess = grid[currentRow].join("");
 
+    if (!words.some((wordObj) => wordObj.word === guess)) {
+        showPopup(
+            "Word " + guess.toUpperCase() + " is not in the word list!",
+            1_000
+        );
+        updateRowHints("");
+        return;
+    }
     updateRowHints(guess);
 
     if (guess === answer) {
@@ -94,19 +100,14 @@ function checkGuess() {
 }
 
 function gameOver(hasWon) {
-    let container = document.getElementById("game-container");
-    let message = document.createElement("h1");
-    message.classList.add("end-game-message");
+    let message = "";
 
-    if (hasWon) {
-        message.textContent = "Victory!";
-        document.removeEventListener("keydown", onkeydown);
-    } else {
-        message.textContent =
-            "You lose! The answer was " + answer.toUpperCase();
-    }
+    message = hasWon
+        ? "Victory!"
+        : "You lose! The answer was " + answer.toUpperCase();
+    if (hasWon) document.removeEventListener("keydown", onkeydown);
 
-    container.appendChild(message);
+    showPopup(message, null);
 }
 
 // Apply classes to guessed characters
@@ -124,6 +125,27 @@ function updateRowHints(guess) {
     }
 }
 
+function showPopup(message, timeoutMs) {
+    const popup = document.getElementById("popup");
+    const popupMessage = document.getElementById("popup-message");
+    const popupOverlay = document.getElementById("popup-overlay");
+
+    popupMessage.textContent = message;
+    popup.style.display = "block";
+    popupOverlay.style.display = "block";
+
+    if (timeoutMs != null) {
+        setTimeout(closePopup, timeoutMs);
+    }
+}
+
+function closePopup() {
+    const popup = document.getElementById("popup");
+    const popupOverlay = document.getElementById("popup-overlay");
+
+    popup.style.display = "none";
+    popupOverlay.style.display = "none";
+}
 let words = [
     { word: "about" },
     { word: "above" },
